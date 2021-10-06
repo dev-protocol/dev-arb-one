@@ -1,0 +1,8 @@
+//SPDX-License-Identifier: Unlicense
+pragma solidity ^0.8.0;
+
+import {IBridge} from "./IBridge.sol";
+
+interface IInbox {
+    function bridge() external view returns (IBridge);
+}
