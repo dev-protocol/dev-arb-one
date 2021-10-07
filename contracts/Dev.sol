@@ -8,7 +8,7 @@ import {IInbox} from "interfaces/IInbox.sol";
 import {IOutbox} from "interfaces/IOutbox.sol";
 import {IBridge} from "interfaces/IBridge.sol";
 
-contract Dev is ERC20Upgradeable, IOutbox, IInbox {
+contract Dev is ERC20Upgradeable {
     address public l2Token;
     address public gateway;
     address public inbox;
@@ -35,13 +35,5 @@ contract Dev is ERC20Upgradeable, IOutbox, IInbox {
         IOutbox outbox = IOutbox(_bridge.activeOutbox());
         require(address(outbox) != address(0), "outbox is zero address");
         return outbox.l2ToL1Sender();
-    }
-
-    function bridge() external view returns (IBridge) {
-
-    }
-
-    function l2ToL1Sender() external view returns (address) {
-
     }
 }
