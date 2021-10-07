@@ -1,13 +1,14 @@
 //SPDX-License-Identifier: Unlicense
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.9;
 
 import "hardhat/console.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import {IInbox} from "interfaces/IInbox.sol";
 import {IOutbox} from "interfaces/IOutbox.sol";
+import {IBridge} from "interfaces/IBridge.sol";
 
-contract Dev is ERC20Upgradeable, IInbox, IOutbox, Initializable {
+contract Dev is ERC20Upgradeable, IOutbox, IInbox {
     address public l2Token;
     address public gateway;
     address public inbox;
@@ -29,10 +30,18 @@ contract Dev is ERC20Upgradeable, IInbox, IOutbox, Initializable {
     }
     
     function _l2Sender() private view returns (address) {
-        IBridge bridge = IInbox(inbox).bridge();
-        require(address(bridge) != address(0), "bridge is zero address");
-        IOutbox outbox = IOutbox(bridge.activeOutbox());
+        IBridge _bridge = IInbox(inbox).bridge();
+        require(address(_bridge) != address(0), "bridge is zero address");
+        IOutbox outbox = IOutbox(_bridge.activeOutbox());
         require(address(outbox) != address(0), "outbox is zero address");
         return outbox.l2ToL1Sender();
+    }
+
+    function bridge() external view returns (IBridge) {
+
+    }
+
+    function l2ToL1Sender() external view returns (address) {
+
     }
 }
