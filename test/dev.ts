@@ -1,17 +1,29 @@
 import { expect } from "chai";
-import { ethers, upgrades } from "hardhat";
+import IIboxABI from "../abi/interfaces/IInbox.sol/IInbox.json";
+import IOutboxABI from "../abi/interfaces/IOutbox.sol/IOutbox.json";
+import IBridgeABI from "../abi/interfaces/IBridge.sol/IBridge.json";
+import { ethers, upgrades, waffle } from "hardhat";
+
+const { deployMockContract } = waffle;
 
 describe("Dev", function () {
   /** TODO - these need to be changed */
   const L2_TOKEN_ADDR = "0x0000000000000000000000000000000000000000";
   const GATEWAY_ADDR = "0x0000000000000000000000000000000000000001";
-  const INBOX_ADDR = "0x0000000000000000000000000000000000000002";
+  let INBOX_ADDR = "0x0000000000000000000000000000000000000002";
   /** end TODO */
   let dummyDevAddr = "";
 
   before(async function () {
     this.Dev = await ethers.getContractFactory("Dev");
     this.ErcDummy = await ethers.getContractFactory("ERC20Upgradeable");
+
+    const [, user] = await ethers.getSigners();
+
+    this.mockBridge = await deployMockContract(user, IBridgeABI);
+    this.mockInbox = await deployMockContract(user, IIboxABI);
+    this.mockOutbox = await deployMockContract(user, IOutboxABI);
+    INBOX_ADDR = this.mockInbox.address;
   });
 
   beforeEach(async function () {
@@ -21,7 +33,12 @@ describe("Dev", function () {
 
     this.dev = await upgrades.deployProxy(
       this.Dev,
-      [L2_TOKEN_ADDR, GATEWAY_ADDR, INBOX_ADDR, this.ercDummy.address],
+      [
+        L2_TOKEN_ADDR,
+        GATEWAY_ADDR,
+        this.mockInbox.address,
+        this.ercDummy.address,
+      ],
       { unsafeAllow: ["delegatecall"] }
     );
     await this.dev.deployed();
@@ -36,6 +53,12 @@ describe("Dev", function () {
   });
 
   it("Should fail minting when not from l2Token address", async function () {
+    await this.mockBridge.mock.activeOutbox.returns(this.mockOutbox.address);
+
+    await this.mockOutbox.mock.l2ToL1Sender.returns(GATEWAY_ADDR); // what should this testing be?
+
+    await this.mockInbox.mock.bridge.returns(this.mockBridge.address);
+
     expect(this.dev.escrowMint(100)).to.be.revertedWith(
       "sender must be l2 token"
     );
@@ -43,13 +66,11 @@ describe("Dev", function () {
 
   // it("Should fail due to insufficient DEV balance", async function () {});
 
-  // it("Should fail sending non-DEV to wrap function", async function () {
-  //   const ErcDummy2 = await ethers.getContractFactory("ERC20Upgradeable");
-  //   const ercDummy2 = await upgrades.deployProxy(ErcDummy2);
-  //   console.log("dummy2 address is: ", ercDummy2.address);
-
-  //   // const success = await this.dev.wrap(ErcDummy2, 1000);
-
-  //   expect(this.dev.wrap(ErcDummy2, 1000)).to.be.revertedWith("Only send DEV");
-  // });
+  it("Should fail sending non-DEV to wrap function", async function () {
+    const ErcDummy2 = await ethers.getContractFactory("ERC20Upgradeable");
+    const ercDummy2 = await upgrades.deployProxy(ErcDummy2);
+    expect(this.dev.wrap(ercDummy2.address, 1000)).to.be.revertedWith(
+      "Only send DEV"
+    );
+  });
 });

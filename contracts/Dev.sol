@@ -46,7 +46,9 @@ contract Dev is ERC20Upgradeable, ReentrancyGuardUpgradeable {
     /**
      * Wrap DEV to create Arbitrum compatible token 
      */
-    function wrap(IERC20 _token, uint256 _amount) external nonReentrant returns (bool) {
+    function wrap(address _tokenAddress, uint256 _amount) external nonReentrant returns (bool) {
+        IERC20 _token = IERC20(_tokenAddress);
+
         require(
             _token.balanceOf(address(msg.sender)) >= _amount,
             "Insufficient DEV balance"
