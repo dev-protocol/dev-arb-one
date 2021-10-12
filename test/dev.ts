@@ -64,13 +64,18 @@ describe("Dev", function () {
     );
   });
 
-  // it("Should fail due to insufficient DEV balance", async function () {});
-
   it("Should fail sending non-DEV to wrap function", async function () {
     const ErcDummy2 = await ethers.getContractFactory("ERC20Upgradeable");
     const ercDummy2 = await upgrades.deployProxy(ErcDummy2);
     expect(this.dev.wrap(ercDummy2.address, 1000)).to.be.revertedWith(
       "Only send DEV"
     );
+  });
+
+  it("Should fail wrapping due to insufficient DEV balance", async function () {
+    const [, addr2] = await ethers.getSigners();
+    expect(
+      this.dev.connect(addr2).wrap(this.ercDummy.address, 1000000)
+    ).to.be.revertedWith("Insufficient DEV balance");
   });
 });

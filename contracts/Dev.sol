@@ -48,12 +48,11 @@ contract Dev is ERC20Upgradeable, ReentrancyGuardUpgradeable {
      */
     function wrap(address _tokenAddress, uint256 _amount) external nonReentrant returns (bool) {
         IERC20 _token = IERC20(_tokenAddress);
-
+        require (address(_token) == devAddress, "Only send DEV");
         require(
             _token.balanceOf(address(msg.sender)) >= _amount,
             "Insufficient DEV balance"
         );
-        require (address(_token) == devAddress, "Only send DEV");
         _token.safeTransfer(address(this), _amount);
         _mint(msg.sender, _amount);
         return true;
