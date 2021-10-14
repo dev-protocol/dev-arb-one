@@ -47,13 +47,13 @@ contract Dev is ERC20Upgradeable, ReentrancyGuardUpgradeable {
      * Wrap DEV to create Arbitrum compatible token 
      */
     function wrap(address _tokenAddress, uint256 _amount) external nonReentrant returns (bool) {
+        require (address(_tokenAddress) == devAddress, "Only send DEV");
         IERC20 _token = IERC20(_tokenAddress);
-        require (address(_token) == devAddress, "Only send DEV");
         require(
             _token.balanceOf(address(msg.sender)) >= _amount,
-            "Insufficient DEV balance"
+            "Insufficient balance"
         );
-        _token.safeTransfer(address(this), _amount);
+        _token.safeTransferFrom(msg.sender, address(this), _amount);
         _mint(msg.sender, _amount);
         return true;
     }
@@ -62,7 +62,7 @@ contract Dev is ERC20Upgradeable, ReentrancyGuardUpgradeable {
      * Burn pegged token and return DEV 
      */
     function unwrap() external payable nonReentrant returns (bool) {
-        require(balanceOf(msg.sender) > msg.value, "Insufficient funds");
+        require(balanceOf(msg.sender) > msg.value, "Insufficient balance");
         _burn(msg.sender, msg.value);
         IERC20(devAddress).transfer(msg.sender, msg.value);
         return true;

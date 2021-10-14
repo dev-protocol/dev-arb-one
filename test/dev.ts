@@ -11,11 +11,10 @@ describe("Dev", function () {
   const L2_TOKEN_ADDR = "0x0000000000000000000000000000000000000000";
   const GATEWAY_ADDR = "0x0000000000000000000000000000000000000001";
   /** end TODO */
-  let dummyDevAddr = "";
 
   before(async function () {
     this.Dev = await ethers.getContractFactory("Dev");
-    this.ErcDummy = await ethers.getContractFactory("ERC20Upgradeable");
+    this.ErcDummy = await ethers.getContractFactory("DummyDev");
 
     const [, user] = await ethers.getSigners();
 
@@ -25,9 +24,13 @@ describe("Dev", function () {
   });
 
   beforeEach(async function () {
-    this.ercDummy = await upgrades.deployProxy(this.ErcDummy);
-    console.log("this erc dummy address is: ", this.ercDummy.address);
-    dummyDevAddr = this.ercDummy.address;
+    const [, user] = await ethers.getSigners();
+    this.ercDummy = await this.ErcDummy.deploy(
+      ethers.BigNumber.from(10 ** 8),
+      user.address
+    );
+
+    await this.ercDummy.deployed();
 
     this.dev = await upgrades.deployProxy(
       this.Dev,
@@ -40,14 +43,13 @@ describe("Dev", function () {
       { unsafeAllow: ["delegatecall"] }
     );
     await this.dev.deployed();
-    console.log("Wrapped DEV address is: ", this.dev.address);
   });
 
   it("Should initialize values", async function () {
     expect(await this.dev.l2Token()).to.equal(L2_TOKEN_ADDR);
     expect(await this.dev.gateway()).to.equal(GATEWAY_ADDR);
     expect(await this.dev.inbox()).to.equal(this.mockInbox.address);
-    expect(await this.dev.devAddress()).to.equal(dummyDevAddr);
+    expect(await this.dev.devAddress()).to.equal(this.ercDummy.address);
   });
 
   it("Should fail minting when not from l2Token address", async function () {
@@ -65,22 +67,34 @@ describe("Dev", function () {
   it("Should fail sending non-DEV to wrap function", async function () {
     const ErcDummy2 = await ethers.getContractFactory("ERC20Upgradeable");
     const ercDummy2 = await upgrades.deployProxy(ErcDummy2);
+    await ercDummy2.deployed();
     expect(this.dev.wrap(ercDummy2.address, 1000)).to.be.revertedWith(
       "Only send DEV"
     );
   });
 
   it("Should fail wrapping due to insufficient DEV balance", async function () {
-    const [, addr2] = await ethers.getSigners();
+    const [, , addr2] = await ethers.getSigners();
+    this.ercDummy.connect(addr2).approve(this.dev.address, 100);
+
     expect(
-      this.dev.connect(addr2).wrap(this.ercDummy.address, 1000000)
-    ).to.be.revertedWith("Insufficient DEV balance");
+      this.dev.connect(addr2).wrap(this.ercDummy.address, 100)
+    ).to.be.revertedWith("Insufficient balance");
+  });
+
+  it("Should successfully wrap DEV", async function () {
+    const [, user] = await ethers.getSigners();
+    const wrapAmount = 100;
+
+    await this.ercDummy.connect(user).approve(this.dev.address, wrapAmount);
+    await this.dev.connect(user).wrap(this.ercDummy.address, wrapAmount);
+
+    expect(await this.dev.balanceOf(user.address)).to.eq(wrapAmount);
   });
 
   it("Should fail unwrapping due to insufficient pegged DEV funds", async function () {
-    const [, addr2] = await ethers.getSigners();
-    expect(this.dev.connect(addr2).unwrap({ value: 1000 })).to.be.revertedWith(
-      "Insufficient DEV balance"
+    expect(this.dev.unwrap({ value: 1000 })).to.be.revertedWith(
+      "Insufficient balance"
     );
   });
 });
