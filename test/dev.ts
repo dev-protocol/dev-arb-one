@@ -10,6 +10,7 @@ describe("Dev", function () {
   /** TODO - these need to be changed */
   const L2_TOKEN_ADDR = "0x0000000000000000000000000000000000000000";
   const GATEWAY_ADDR = "0x0000000000000000000000000000000000000001";
+  const DUMMY_MINT_AMOUNT = 10 ** 8;
   /** end TODO */
 
   before(async function () {
@@ -24,10 +25,10 @@ describe("Dev", function () {
   });
 
   beforeEach(async function () {
-    const [, user] = await ethers.getSigners();
+    const [user1] = await ethers.getSigners();
     this.ercDummy = await this.ErcDummy.deploy(
-      ethers.BigNumber.from(10 ** 8),
-      user.address
+      ethers.BigNumber.from(DUMMY_MINT_AMOUNT),
+      user1.address
     );
 
     await this.ercDummy.deployed();
@@ -74,27 +75,54 @@ describe("Dev", function () {
   });
 
   it("Should fail wrapping due to insufficient DEV balance", async function () {
-    const [, , addr2] = await ethers.getSigners();
-    this.ercDummy.connect(addr2).approve(this.dev.address, 100);
+    const [, user2] = await ethers.getSigners();
+    this.ercDummy.connect(user2).approve(this.dev.address, 100);
 
     expect(
-      this.dev.connect(addr2).wrap(this.ercDummy.address, 100)
+      this.dev.connect(user2).wrap(this.ercDummy.address, 100)
     ).to.be.revertedWith("Insufficient balance");
   });
 
   it("Should successfully wrap DEV", async function () {
-    const [, user] = await ethers.getSigners();
+    const [user] = await ethers.getSigners();
     const wrapAmount = 100;
 
-    await this.ercDummy.connect(user).approve(this.dev.address, wrapAmount);
-    await this.dev.connect(user).wrap(this.ercDummy.address, wrapAmount);
+    expect(await this.dev.balanceOf(user.address)).to.eq(0);
+    expect(await this.ercDummy.balanceOf(user.address)).to.eq(
+      DUMMY_MINT_AMOUNT
+    );
+    expect(await this.ercDummy.balanceOf(this.dev.address)).to.eq(0);
+
+    await this.ercDummy.approve(this.dev.address, wrapAmount);
+    await this.dev.wrap(this.ercDummy.address, wrapAmount);
 
     expect(await this.dev.balanceOf(user.address)).to.eq(wrapAmount);
+    expect(await this.ercDummy.balanceOf(user.address)).to.eq(
+      DUMMY_MINT_AMOUNT - wrapAmount
+    );
+    expect(await this.ercDummy.balanceOf(this.dev.address)).to.eq(wrapAmount);
   });
 
   it("Should fail unwrapping due to insufficient pegged DEV funds", async function () {
     expect(this.dev.unwrap({ value: 1000 })).to.be.revertedWith(
       "Insufficient balance"
     );
+  });
+
+  it("Should successfully unwrap DEV", async function () {
+    const [user] = await ethers.getSigners();
+    const wrapAmount = 100;
+
+    await this.ercDummy.approve(this.dev.address, wrapAmount);
+    await this.dev.wrap(this.ercDummy.address, wrapAmount);
+    expect(await this.dev.balanceOf(user.address)).to.eq(wrapAmount);
+
+    await this.dev.unwrap({ value: wrapAmount });
+
+    expect(await this.dev.balanceOf(user.address)).to.eq(0);
+    expect(await this.ercDummy.balanceOf(user.address)).to.eq(
+      DUMMY_MINT_AMOUNT
+    );
+    expect(await this.ercDummy.balanceOf(this.dev.address)).to.eq(0);
   });
 });
