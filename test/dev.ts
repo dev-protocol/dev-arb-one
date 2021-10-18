@@ -104,9 +104,7 @@ describe("Dev", function () {
   });
 
   it("Should fail unwrapping due to insufficient pegged DEV funds", async function () {
-    expect(this.dev.unwrap({ value: 1000 })).to.be.revertedWith(
-      "Insufficient balance"
-    );
+    expect(this.dev.unwrap(1000)).to.be.revertedWith("Insufficient balance");
   });
 
   it("Should successfully unwrap DEV", async function () {
@@ -117,7 +115,7 @@ describe("Dev", function () {
     await this.dev.wrap(this.ercDummy.address, wrapAmount);
     expect(await this.dev.balanceOf(user.address)).to.eq(wrapAmount);
 
-    await this.dev.unwrap({ value: wrapAmount });
+    await this.dev.unwrap(wrapAmount);
 
     expect(await this.dev.balanceOf(user.address)).to.eq(0);
     expect(await this.ercDummy.balanceOf(user.address)).to.eq(

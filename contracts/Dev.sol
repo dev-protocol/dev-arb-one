@@ -61,10 +61,10 @@ contract Dev is ERC20Upgradeable, ReentrancyGuardUpgradeable {
     /**
      * Burn pegged token and return DEV 
      */
-    function unwrap() external payable nonReentrant returns (bool) {
-        require(balanceOf(msg.sender) >= msg.value, "Insufficient balance");
-        _burn(msg.sender, msg.value);
-        IERC20(devAddress).transfer(msg.sender, msg.value);
+    function unwrap(uint256 _amount) external payable nonReentrant returns (bool) {
+        require(balanceOf(msg.sender) >= _amount, "Insufficient balance");
+        _burn(msg.sender, _amount);
+        IERC20(devAddress).transfer(msg.sender, _amount);
         return true;
     }
 }
