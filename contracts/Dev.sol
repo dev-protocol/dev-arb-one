@@ -46,7 +46,7 @@ contract Dev is ERC20Upgradeable, ReentrancyGuardUpgradeable {
     /**
      * Wrap DEV to create Arbitrum compatible token 
      */
-    function wrap(address _tokenAddress, uint256 _amount) external nonReentrant returns (bool) {
+    function wrap(address _tokenAddress, uint256 _amount) public nonReentrant returns (bool) {
         require (address(_tokenAddress) == devAddress, "Only send DEV");
         IERC20 _token = IERC20(_tokenAddress);
         require(
@@ -55,6 +55,12 @@ contract Dev is ERC20Upgradeable, ReentrancyGuardUpgradeable {
         );
         _token.safeTransferFrom(msg.sender, address(this), _amount);
         _mint(msg.sender, _amount);
+        return true;
+    }
+
+    function wrapAndBridge(address _tokenAddress, uint256 _amount) external nonReentrant returns (bool) {
+        wrap(_tokenAddress, _amount);
+        transferFrom(msg.sender, gateway, _amount);
         return true;
     }
 
