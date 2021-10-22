@@ -21,11 +21,6 @@ import "@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol";
 contract aeERC20 is ERC20PermitUpgradeable, TransferAndCallToken, ReentrancyGuardUpgradeable {
     using AddressUpgradeable for address;
 
-    constructor() public initializer {
-        // this is expected to be used as the logic contract behind a proxy
-        // override the constructor if you don't wish to use the initialize method
-    }
-
     function _initialize(
         string memory name_,
         string memory symbol_
@@ -45,9 +40,11 @@ contract ArbDEVTokenL1 is aeERC20, ICustomToken {
 
     // uint8 public constant TEST = uint8(0xa4b1);
 
-    constructor(address _bridge) public {
+    constructor(address _bridge, address _devAddress, address _gateway) public {
         bridge = _bridge;
         aeERC20._initialize("Dev", "DEV");
+        devAddress = _devAddress;
+        gateway = _gateway;
     }
 
     function mint() external {
@@ -135,7 +132,7 @@ contract ArbDEVTokenL1 is aeERC20, ICustomToken {
 
 contract MintableArbDEVL1 is L1MintableToken, ArbDEVTokenL1 {
 
-    constructor(address _bridge) public ArbDEVTokenL1(_bridge) {}
+    constructor(address _bridge, address _devAddress, address _gatewayAddress) public ArbDEVTokenL1(_bridge, _devAddress, _gatewayAddress) {}
 
     function bridgeMint(address account, uint256 amount) public override(L1MintableToken) {
         _mint(account, amount);
