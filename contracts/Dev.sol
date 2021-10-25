@@ -4,13 +4,13 @@ pragma solidity ^0.8.9;
 import "hardhat/console.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
-import "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import {IInbox} from "interfaces/IInbox.sol";
 import {IOutbox} from "interfaces/IOutbox.sol";
 import {IBridge} from "interfaces/IBridge.sol";
+import {IGatewayRouter} from "interfaces/IGatewayRouter.sol";
 
-contract Dev is ERC20Upgradeable, ReentrancyGuardUpgradeable {
+contract Dev is ERC20Upgradeable {
     using SafeERC20 for IERC20;
 
     address public l2Token;
@@ -46,7 +46,7 @@ contract Dev is ERC20Upgradeable, ReentrancyGuardUpgradeable {
     /**
      * Wrap DEV to create Arbitrum compatible token 
      */
-    function wrap(address _tokenAddress, uint256 _amount) public nonReentrant returns (bool) {
+    function wrap(address _tokenAddress, uint256 _amount) public returns (bool) {
         require (address(_tokenAddress) == devAddress, "Only send DEV");
         IERC20 _token = IERC20(_tokenAddress);
         require(
@@ -58,16 +58,16 @@ contract Dev is ERC20Upgradeable, ReentrancyGuardUpgradeable {
         return true;
     }
 
-    function wrapAndBridge(address _tokenAddress, uint256 _amount) external nonReentrant returns (bool) {
+    function wrapAndBridge(address _tokenAddress, uint256 _amount, uint256 _maxGas, uint256 _gasPriceBid, bytes calldata _data) external returns (bool) {
         wrap(_tokenAddress, _amount);
-        transferFrom(msg.sender, gateway, _amount);
+        IGatewayRouter(gateway).outboundTransfer(_tokenAddress, msg.sender, _amount, _maxGas, _gasPriceBid, _data);
         return true;
     }
 
     /**
      * Burn pegged token and return DEV 
      */
-    function unwrap(uint256 _amount) external payable nonReentrant returns (bool) {
+    function unwrap(uint256 _amount) external payable returns (bool) {
         require(balanceOf(msg.sender) >= _amount, "Insufficient balance");
         _burn(msg.sender, _amount);
         IERC20(devAddress).transfer(msg.sender, _amount);
