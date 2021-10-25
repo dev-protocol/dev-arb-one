@@ -60,6 +60,7 @@ contract Dev is ERC20Upgradeable {
 
     function wrapAndBridge(address _tokenAddress, uint256 _amount, uint256 _maxGas, uint256 _gasPriceBid, bytes calldata _data) external returns (bool) {
         wrap(_tokenAddress, _amount);
+        _approve(msg.sender, gateway, type(uint256).max);
         IGatewayRouter(gateway).outboundTransfer(_tokenAddress, msg.sender, _amount, _maxGas, _gasPriceBid, _data);
         return true;
     }
