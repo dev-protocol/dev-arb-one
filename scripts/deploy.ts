@@ -19,12 +19,11 @@ async function main() {
 
   // We get the contract to deploy
   const Dev = await ethers.getContractFactory("Dev");
-  const dev = await upgrades.deployProxy(Dev, [
-    l2DevAddress,
-    gatewayAddress,
-    inboxAddress,
-    l1DevAddress,
-  ]);
+  const dev = await upgrades.deployProxy(
+    Dev,
+    [l2DevAddress, gatewayAddress, inboxAddress, l1DevAddress],
+    { unsafeAllow: ["delegatecall"] }
+  );
 
   await dev.deployed();
 
