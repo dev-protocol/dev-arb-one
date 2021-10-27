@@ -397,16 +397,11 @@
         "type": "bool"
       }
     ],
-    "stateMutability": "payable",
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
     "inputs": [
-      {
-        "internalType": "address",
-        "name": "_tokenAddress",
-        "type": "address"
-      },
       {
         "internalType": "uint256",
         "name": "_amount",

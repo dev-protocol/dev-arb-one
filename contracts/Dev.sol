@@ -3,7 +3,6 @@ pragma solidity ^0.8.9;
 
 import "hardhat/console.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import {IInbox} from "interfaces/IInbox.sol";
 import {IOutbox} from "interfaces/IOutbox.sol";
@@ -46,9 +45,8 @@ contract Dev is ERC20Upgradeable {
     /**
      * Wrap DEV to create Arbitrum compatible token 
      */
-    function wrap(address _tokenAddress, uint256 _amount) public returns (bool) {
-        require (address(_tokenAddress) == devAddress, "Only send DEV");
-        IERC20 _token = IERC20(_tokenAddress);
+    function wrap(uint256 _amount) public returns (bool) {
+        IERC20 _token = IERC20(devAddress);
         require(
             _token.balanceOf(address(msg.sender)) >= _amount,
             "Insufficient balance"
@@ -59,7 +57,7 @@ contract Dev is ERC20Upgradeable {
     }
 
     function wrapAndBridge(address _tokenAddress, uint256 _amount, uint256 _maxGas, uint256 _gasPriceBid, bytes calldata _data) external returns (bool) {
-        wrap(_tokenAddress, _amount);
+        wrap(_amount);
         _approve(msg.sender, gateway, type(uint256).max);
         IGatewayRouter(gateway).outboundTransfer(_tokenAddress, msg.sender, _amount, _maxGas, _gasPriceBid, _data);
         return true;
@@ -68,7 +66,7 @@ contract Dev is ERC20Upgradeable {
     /**
      * Burn pegged token and return DEV 
      */
-    function unwrap(uint256 _amount) external payable returns (bool) {
+    function unwrap(uint256 _amount) external returns (bool) {
         require(balanceOf(msg.sender) >= _amount, "Insufficient balance");
         _burn(msg.sender, _amount);
         IERC20(devAddress).transfer(msg.sender, _amount);

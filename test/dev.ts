@@ -65,22 +65,13 @@ describe("Dev", function () {
     );
   });
 
-  it("Should fail sending non-DEV to wrap function", async function () {
-    const ErcDummy2 = await ethers.getContractFactory("ERC20Upgradeable");
-    const ercDummy2 = await upgrades.deployProxy(ErcDummy2);
-    await ercDummy2.deployed();
-    expect(this.dev.wrap(ercDummy2.address, 1000)).to.be.revertedWith(
-      "Only send DEV"
-    );
-  });
-
   it("Should fail wrapping due to insufficient DEV balance", async function () {
     const [, user2] = await ethers.getSigners();
     this.ercDummy.connect(user2).approve(this.dev.address, 100);
 
-    expect(
-      this.dev.connect(user2).wrap(this.ercDummy.address, 100)
-    ).to.be.revertedWith("Insufficient balance");
+    expect(this.dev.connect(user2).wrap(100)).to.be.revertedWith(
+      "Insufficient balance"
+    );
   });
 
   it("Should successfully wrap DEV", async function () {
@@ -94,7 +85,7 @@ describe("Dev", function () {
     expect(await this.ercDummy.balanceOf(this.dev.address)).to.eq(0);
 
     await this.ercDummy.approve(this.dev.address, wrapAmount);
-    await this.dev.wrap(this.ercDummy.address, wrapAmount);
+    await this.dev.wrap(wrapAmount);
 
     expect(await this.dev.balanceOf(user.address)).to.eq(wrapAmount);
     expect(await this.ercDummy.balanceOf(user.address)).to.eq(
@@ -112,7 +103,7 @@ describe("Dev", function () {
     const wrapAmount = 100;
 
     await this.ercDummy.approve(this.dev.address, wrapAmount);
-    await this.dev.wrap(this.ercDummy.address, wrapAmount);
+    await this.dev.wrap(wrapAmount);
     expect(await this.dev.balanceOf(user.address)).to.eq(wrapAmount);
 
     await this.dev.unwrap(wrapAmount);
