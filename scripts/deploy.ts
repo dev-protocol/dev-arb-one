@@ -18,7 +18,7 @@ async function main() {
   console.log("Account balance:", (await deployer.getBalance()).toString());
 
   // We get the contract to deploy
-  const Dev = await ethers.getContractFactory("Dev");
+  const Dev = await ethers.getContractFactory("ArbDevWrapper");
   const dev = await upgrades.deployProxy(
     Dev,
     [l2DevAddress, gatewayAddress, inboxAddress, l1DevAddress],
