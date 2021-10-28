@@ -4,12 +4,14 @@ pragma solidity ^0.8.9;
 import "hardhat/console.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import {IInbox} from "interfaces/IInbox.sol";
 import {IOutbox} from "interfaces/IOutbox.sol";
 import {IBridge} from "interfaces/IBridge.sol";
 import {IGatewayRouter} from "interfaces/IGatewayRouter.sol";
+import {IMintRenounceable} from "interfaces/IMintRenounceable.sol";
 
-contract Dev is ERC20Upgradeable {
+contract ArbDevWrapper is ERC20Upgradeable, OwnableUpgradeable {
     using SafeERC20 for IERC20;
 
     address public l2Token;
@@ -20,7 +22,7 @@ contract Dev is ERC20Upgradeable {
     event EscrowMint(address indexed minter, uint256 amount);
 
     function initialize(address _l2TokenAddr, address _gatewayAddr, address _inbox, address _devAddress) public initializer {
-        __ERC20_init("Dev", "DEV");
+        __ERC20_init("Arb Dev Wrapper", "WDEV");
         l2Token = _l2TokenAddr;
         gateway = _gatewayAddr;
         inbox = _inbox;
@@ -56,10 +58,10 @@ contract Dev is ERC20Upgradeable {
         return true;
     }
 
-    function wrapAndBridge(address _tokenAddress, uint256 _amount, uint256 _maxGas, uint256 _gasPriceBid, bytes calldata _data) external returns (bool) {
+    function wrapAndBridge(uint256 _amount, uint256 _maxGas, uint256 _gasPriceBid, bytes calldata _data) external returns (bool) {
         wrap(_amount);
         _approve(msg.sender, gateway, type(uint256).max);
-        IGatewayRouter(gateway).outboundTransfer(_tokenAddress, msg.sender, _amount, _maxGas, _gasPriceBid, _data);
+        IGatewayRouter(gateway).outboundTransfer(devAddress, msg.sender, _amount, _maxGas, _gasPriceBid, _data);
         return true;
     }
 
@@ -69,7 +71,21 @@ contract Dev is ERC20Upgradeable {
     function unwrap(uint256 _amount) external returns (bool) {
         require(balanceOf(msg.sender) >= _amount, "Insufficient balance");
         _burn(msg.sender, _amount);
-        IERC20(devAddress).transfer(msg.sender, _amount);
+        IERC20(devAddress).safeTransfer(msg.sender, _amount);
         return true;
     }
+
+    /** Safety measure to transfer DEV to owner */
+    function transferDev() external onlyOwner returns (bool) {
+		IERC20 token = IERC20(devAddress);
+		uint256 balance = token.balanceOf(address(this));
+		return token.transfer(msg.sender, balance);
+	}
+
+    /**
+	 * Delete mint role
+	 */
+	function renounceMinter() external onlyOwner {
+		IMintRenounceable(devAddress).renounceMinter();
+	}
 }
