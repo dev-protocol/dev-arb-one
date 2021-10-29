@@ -8,6 +8,7 @@
 		"pretest": "yarn generate",
 		"generate": "hardhat compile",
 		"pregenerate": "yarn clean",
+		"postgenerate": "yarn lint:format",
 		"lint": "yarn lint:eslint && yarn lint:solhint && yarn lint:format",
 		"lint:eslint": "eslint . --ext .ts --fix",
 		"lint:solhint": "solhint --fix \"contracts/**/*.sol\"",
