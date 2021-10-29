@@ -18,7 +18,6 @@ contract ArbDevWrapper is ERC20Upgradeable, OwnableUpgradeable {
 	address public l2Token;
 	address public gateway;
 	address public inbox;
-	address public bridge;
 	address public router;
 	address public devAddress;
 	bool private shouldRegisterGateway;
@@ -27,18 +26,16 @@ contract ArbDevWrapper is ERC20Upgradeable, OwnableUpgradeable {
 
 	function initialize(
 		address _l2TokenAddr,
+		address _routerAddr,
 		address _gatewayAddr,
 		address _inbox,
-		address _devAddress,
-		address _bridge,
-		address _router
+		address _devAddress
 	) public initializer {
 		__ERC20_init("Arb Dev Wrapper", "WDEV");
 		l2Token = _l2TokenAddr;
+		router = _routerAddr;
 		gateway = _gatewayAddr;
 		inbox = _inbox;
-		bridge = _bridge;
-		router = _router;
 		devAddress = _devAddress;
 	}
 
@@ -78,8 +75,8 @@ contract ArbDevWrapper is ERC20Upgradeable, OwnableUpgradeable {
 		bytes calldata _data
 	) external returns (bool) {
 		wrap(_amount);
-		_approve(msg.sender, gateway, type(uint256).max);
-		IGatewayRouter(gateway).outboundTransfer(
+		_approve(msg.sender, router, type(uint256).max);
+		IGatewayRouter(router).outboundTransfer(
 			devAddress,
 			msg.sender,
 			_amount,
@@ -124,27 +121,24 @@ contract ArbDevWrapper is ERC20Upgradeable, OwnableUpgradeable {
 		uint256 maxSubmissionCostForCustomBridge,
 		uint256 maxSubmissionCostForRouter,
 		uint256 maxGas,
-		uint256 gasPriceBid,
-		address creditBackAddress
+		uint256 gasPriceBid
 	) public {
 		// we temporarily set `shouldRegisterGateway` to true for the callback in registerTokenToL2 to succeed
 		bool prev = shouldRegisterGateway;
 		shouldRegisterGateway = true;
 
-		ICustomGateway(bridge).registerTokenToL2(
+		ICustomGateway(gateway).registerTokenToL2(
 			l2CustomTokenAddress,
 			maxGas,
 			gasPriceBid,
-			maxSubmissionCostForCustomBridge,
-			creditBackAddress
+			maxSubmissionCostForCustomBridge
 		);
 
 		IGatewayRouter(router).setGateway(
-			bridge,
+			gateway,
 			maxGas,
 			gasPriceBid,
-			maxSubmissionCostForRouter,
-			creditBackAddress
+			maxSubmissionCostForRouter
 		);
 
 		shouldRegisterGateway = prev;

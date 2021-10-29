@@ -6,7 +6,6 @@ interface ICustomGateway {
 		address _l2CustomTokenAddress,
 		uint256 _maxGas,
 		uint256 _gasPriceBid,
-		uint256 _maxSubmissionCostForCustomBridge,
-		address _creditBackAddress
+		uint256 _maxSubmissionCostForCustomBridge
 	) external;
 }

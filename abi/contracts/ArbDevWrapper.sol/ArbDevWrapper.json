@@ -156,19 +156,6 @@
 	},
 	{
 		"inputs": [],
-		"name": "bridge",
-		"outputs": [
-			{
-				"internalType": "address",
-				"name": "",
-				"type": "address"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
 		"name": "decimals",
 		"outputs": [
 			{
@@ -289,6 +276,11 @@
 			},
 			{
 				"internalType": "address",
+				"name": "_routerAddr",
+				"type": "address"
+			},
+			{
+				"internalType": "address",
 				"name": "_gatewayAddr",
 				"type": "address"
 			},
@@ -300,16 +292,6 @@
 			{
 				"internalType": "address",
 				"name": "_devAddress",
-				"type": "address"
-			},
-			{
-				"internalType": "address",
-				"name": "_bridge",
-				"type": "address"
-			},
-			{
-				"internalType": "address",
-				"name": "_router",
 				"type": "address"
 			}
 		],
@@ -396,11 +378,6 @@
 				"internalType": "uint256",
 				"name": "gasPriceBid",
 				"type": "uint256"
-			},
-			{
-				"internalType": "address",
-				"name": "creditBackAddress",
-				"type": "address"
 			}
 		],
 		"name": "registerTokenOnL2",
