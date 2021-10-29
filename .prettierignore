@@ -3,5 +3,8 @@ artifacts
 cache
 coverage*
 gasReporterOutput.json
+.openzeppelin
+artifacts
+cache
 dist
 typechain-types

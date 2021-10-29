@@ -2,5 +2,8 @@ node_modules
 artifacts
 cache
 coverage
+.openzeppelin
+artifacts
+cache
 dist
 typechain-types
