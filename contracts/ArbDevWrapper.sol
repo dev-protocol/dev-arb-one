@@ -9,6 +9,7 @@ import {IInbox} from "interfaces/IInbox.sol";
 import {IOutbox} from "interfaces/IOutbox.sol";
 import {IBridge} from "interfaces/IBridge.sol";
 import {IGatewayRouter} from "interfaces/IGatewayRouter.sol";
+import {ICustomGateway} from "interfaces/ICustomGateway.sol";
 import {IMintRenounceable} from "interfaces/IMintRenounceable.sol";
 
 contract ArbDevWrapper is ERC20Upgradeable, OwnableUpgradeable {
@@ -17,15 +18,20 @@ contract ArbDevWrapper is ERC20Upgradeable, OwnableUpgradeable {
     address public l2Token;
     address public gateway;
     address public inbox;
+    address public bridge;
+    address public router;
     address public devAddress;
+    bool private shouldRegisterGateway;
 
     event EscrowMint(address indexed minter, uint256 amount);
 
-    function initialize(address _l2TokenAddr, address _gatewayAddr, address _inbox, address _devAddress) public initializer {
+    function initialize(address _l2TokenAddr, address _gatewayAddr, address _inbox, address _devAddress, address _bridge, address _router) public initializer {
         __ERC20_init("Arb Dev Wrapper", "WDEV");
         l2Token = _l2TokenAddr;
         gateway = _gatewayAddr;
         inbox = _inbox;
+        bridge = _bridge;
+        router = _router;
         devAddress = _devAddress;
     }
 
@@ -88,4 +94,40 @@ contract ArbDevWrapper is ERC20Upgradeable, OwnableUpgradeable {
 	function renounceMinter() external onlyOwner {
 		IMintRenounceable(devAddress).renounceMinter();
 	}
+
+    function isArbitrumEnabled() external view returns (uint16) {
+        require(shouldRegisterGateway, "NOT_EXPECTED_CALL");
+        return uint16(0xa4b1);
+    }
+
+    function registerTokenOnL2(
+        address l2CustomTokenAddress,
+        uint256 maxSubmissionCostForCustomBridge,
+        uint256 maxSubmissionCostForRouter,
+        uint256 maxGas,
+        uint256 gasPriceBid,
+        address creditBackAddress
+    ) public {
+        // we temporarily set `shouldRegisterGateway` to true for the callback in registerTokenToL2 to succeed
+        bool prev = shouldRegisterGateway;
+        shouldRegisterGateway = true;
+
+        ICustomGateway(bridge).registerTokenToL2(
+            l2CustomTokenAddress,
+            maxGas,
+            gasPriceBid,
+            maxSubmissionCostForCustomBridge,
+            creditBackAddress
+        );
+
+        IGatewayRouter(router).setGateway(
+            bridge,
+            maxGas,
+            gasPriceBid,
+            maxSubmissionCostForRouter,
+            creditBackAddress
+        );
+
+        shouldRegisterGateway = prev;
+    }
 }

@@ -9,3 +9,5 @@ cache
 artifacts
 
 .openzeppelin
+yarn-error.log
+typechain-types/
