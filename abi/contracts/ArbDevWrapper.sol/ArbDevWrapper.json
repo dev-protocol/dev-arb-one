@@ -276,6 +276,11 @@
 			},
 			{
 				"internalType": "address",
+				"name": "_routerAddr",
+				"type": "address"
+			},
+			{
+				"internalType": "address",
 				"name": "_gatewayAddr",
 				"type": "address"
 			},
@@ -293,6 +298,19 @@
 		"name": "initialize",
 		"outputs": [],
 		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "isArbitrumEnabled",
+		"outputs": [
+			{
+				"internalType": "uint16",
+				"name": "",
+				"type": "uint16"
+			}
+		],
+		"stateMutability": "view",
 		"type": "function"
 	},
 	{
@@ -335,6 +353,39 @@
 		"type": "function"
 	},
 	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "l2CustomTokenAddress",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "maxSubmissionCostForCustomBridge",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "maxSubmissionCostForRouter",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "maxGas",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "gasPriceBid",
+				"type": "uint256"
+			}
+		],
+		"name": "registerTokenOnL2",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
 		"inputs": [],
 		"name": "renounceMinter",
 		"outputs": [],
@@ -346,6 +397,19 @@
 		"name": "renounceOwnership",
 		"outputs": [],
 		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "router",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
 		"type": "function"
 	},
 	{

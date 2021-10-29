@@ -9,7 +9,8 @@ const { deployMockContract } = waffle
 describe('ArbDevWrapper', () => {
 	/** TODO - these need to be changed */
 	const L2_TOKEN_ADDR = '0x0000000000000000000000000000000000000000'
-	const GATEWAY_ADDR = '0x0000000000000000000000000000000000000001'
+	const ROUTER_ADDR = '0x0000000000000000000000000000000000000001'
+	const GATEWAY_ADDR = '0x0000000000000000000000000000000000000002'
 	const DUMMY_MINT_AMOUNT = 10 ** 8
 	/** End TODO */
 
@@ -37,6 +38,7 @@ describe('ArbDevWrapper', () => {
 			this.Dev,
 			[
 				L2_TOKEN_ADDR,
+				ROUTER_ADDR,
 				GATEWAY_ADDR,
 				this.mockInbox.address,
 				this.ercDummy.address,

@@ -10,4 +10,11 @@ interface IGatewayRouter {
 		uint256 _gasPriceBid,
 		bytes calldata _data
 	) external payable returns (bytes memory res);
+
+	function setGateway(
+		address _gateway,
+		uint256 _maxGas,
+		uint256 _gasPriceBid,
+		uint256 _maxSubmissionCost
+	) external payable returns (uint256);
 }
