@@ -1,0 +1,41 @@
+{
+	"env": {
+		"mocha": true
+	},
+	"parser": "@typescript-eslint/parser",
+	"parserOptions": {
+		"project": "./tsconfig.json",
+		"tsconfigRootDir": "."
+	},
+	"plugins": ["@typescript-eslint"],
+	"extends": [
+		"eslint:recommended",
+		"plugin:@typescript-eslint/eslint-recommended",
+		"plugin:@typescript-eslint/recommended",
+		"xo",
+		"xo-typescript",
+		"prettier"
+	],
+	"rules": {
+		"@typescript-eslint/prefer-readonly-parameter-types": "warn",
+		"@typescript-eslint/naming-convention": "off"
+	},
+	"overrides": [
+		{
+			"files": ["test/**/*.ts"],
+			"rules": {
+				"@typescript-eslint/no-unsafe-call": "off",
+				"@typescript-eslint/no-unsafe-assignment": "off",
+				"@typescript-eslint/no-unsafe-return": "off",
+				"@typescript-eslint/no-floating-promises": "off"
+			}
+		},
+		{
+			"files": ["hardhat.*.ts"],
+			"rules": {
+				"@typescript-eslint/prefer-nullish-coalescing": "off",
+				"no-negated-condition": "off"
+			}
+		}
+	]
+}
