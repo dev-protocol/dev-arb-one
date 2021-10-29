@@ -38,7 +38,7 @@
 		"eslint-plugin-import": "2.25.2",
 		"eslint-plugin-node": "11.1.0",
 		"eslint-plugin-prettier": "4.0.0",
-		"eslint-plugin-promise": "5.1.0",
+		"eslint-plugin-promise": "5.1.1",
 		"ethereum-waffle": "3.4.0",
 		"ethers": "5.4.7",
 		"hardhat": "2.6.7",
