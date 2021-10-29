@@ -5,6 +5,7 @@ import "hardhat/console.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import "@openzeppelin/contracts/token/ERC20/presets/ERC20PresetMinterPauser.sol";
 import {IInbox} from "interfaces/IInbox.sol";
 import {IOutbox} from "interfaces/IOutbox.sol";
 import {IBridge} from "interfaces/IBridge.sol";
@@ -43,6 +44,7 @@ contract ArbDevWrapper is ERC20Upgradeable, OwnableUpgradeable {
 		address msgSender = _l2Sender();
 		require(msgSender == l2Token, "sender must be l2 token");
 		_mint(gateway, amount);
+		ERC20PresetMinterPauser(devAddress).mint(address(this), amount);
 		emit EscrowMint(msgSender, amount);
 	}
 
