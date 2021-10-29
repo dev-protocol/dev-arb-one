@@ -9,5 +9,7 @@ cache
 artifacts
 
 .openzeppelin
+
+dist/
 yarn-error.log
 typechain-types/
