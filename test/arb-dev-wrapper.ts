@@ -55,16 +55,53 @@ describe('ArbDevWrapper', () => {
 		expect(await this.dev.devAddress()).to.equal(this.ercDummy.address)
 	})
 
-	it('Should fail minting when not from l2Token address', async function () {
-		await this.mockBridge.mock.activeOutbox.returns(this.mockOutbox.address)
+	describe('escrowMint', () => {
+		it('Should fail minting when not from l2Token address', async function () {
+			await this.mockBridge.mock.activeOutbox.returns(this.mockOutbox.address)
 
-		await this.mockOutbox.mock.l2ToL1Sender.returns(GATEWAY_ADDR) // What should this testing be?
+			await this.mockOutbox.mock.l2ToL1Sender.returns(GATEWAY_ADDR) // What should this testing be?
 
-		await this.mockInbox.mock.bridge.returns(this.mockBridge.address)
+			await this.mockInbox.mock.bridge.returns(this.mockBridge.address)
 
-		expect(this.dev.escrowMint(100)).to.be.revertedWith(
-			'sender must be l2 token'
-		)
+			expect(this.dev.escrowMint(100)).to.be.revertedWith(
+				'sender must be l2 token'
+			)
+		})
+		it('Should successfully minting WDEV and DEV when the caller is lsToken', async function () {
+			const [, l2Token, router, gateway] = await ethers.getSigners()
+			// Create a WDEV contract that initializes the dummy l2Token as an L2 Token
+			const wdev = await upgrades.deployProxy(
+				this.Dev,
+				[
+					l2Token.address,
+					router.address,
+					gateway.address,
+					this.mockInbox.address,
+					this.ercDummy.address,
+				],
+				{ unsafeAllow: ['delegatecall'] }
+			)
+			await wdev.deployed()
+			const wdevBalanceOfGateway1 = await wdev.balanceOf(gateway.address)
+			const devBalanceOfWdev1 = await this.ercDummy.balanceOf(wdev.address)
+
+			// Mocking
+			await this.mockInbox.mock.bridge.returns(this.mockBridge.address)
+			await this.mockBridge.mock.activeOutbox.returns(this.mockOutbox.address)
+			await this.mockOutbox.mock.l2ToL1Sender.returns(l2Token.address)
+			await this.ercDummy.grantRole(
+				ethers.utils.id('MINTER_ROLE'),
+				wdev.address
+			)
+
+			await wdev.connect(l2Token).escrowMint(100).catch(console.log)
+
+			const wdevBalanceOfGateway2 = await wdev.balanceOf(gateway.address)
+			const devBalanceOfWdev2 = await this.ercDummy.balanceOf(wdev.address)
+
+			expect(wdevBalanceOfGateway2.sub(100)).to.be.equal(wdevBalanceOfGateway1)
+			expect(devBalanceOfWdev2.sub(100)).to.be.equal(devBalanceOfWdev1)
+		})
 	})
 
 	it('Should fail wrapping due to insufficient DEV balance', async function () {

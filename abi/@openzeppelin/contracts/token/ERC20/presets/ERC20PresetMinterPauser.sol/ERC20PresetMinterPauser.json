@@ -2,14 +2,14 @@
 	{
 		"inputs": [
 			{
-				"internalType": "uint256",
-				"name": "initialSupply",
-				"type": "uint256"
+				"internalType": "string",
+				"name": "name",
+				"type": "string"
 			},
 			{
-				"internalType": "address",
-				"name": "mintTo",
-				"type": "address"
+				"internalType": "string",
+				"name": "symbol",
+				"type": "string"
 			}
 		],
 		"stateMutability": "nonpayable",
