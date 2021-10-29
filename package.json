@@ -3,6 +3,19 @@
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
+	"scripts": {
+		"test": "hardhat test",
+		"pretest": "yarn generate",
+		"generate": "hardhat compile",
+		"pregenerate": "yarn clean",
+		"lint": "yarn lint:eslint && yarn lint:solhint && yarn lint:format",
+		"lint:eslint": "eslint . --ext .ts --fix",
+		"lint:solhint": "solhint --fix --max-warnings 0 \"contracts/**/*.sol\"",
+		"lint:format": "prettier --write '**/*.{sol,ts,json,md,yml}'",
+		"build": "tsc -p tsconfig.build.json",
+		"prebuild": "yarn generate",
+		"clean": "rimraf scripts/**/*.js build"
+	},
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "2.0.2",
     "@nomiclabs/hardhat-etherscan": "2.1.7",
