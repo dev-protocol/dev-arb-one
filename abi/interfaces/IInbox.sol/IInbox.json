@@ -1,15 +1,15 @@
 [
-	{
-		"inputs": [],
-		"name": "bridge",
-		"outputs": [
-			{
-				"internalType": "contract IBridge",
-				"name": "",
-				"type": "address"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	}
+  {
+    "inputs": [],
+    "name": "bridge",
+    "outputs": [
+      {
+        "internalType": "contract IBridge",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  }
 ]
