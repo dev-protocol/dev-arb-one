@@ -78,7 +78,7 @@ contract ArbDevWrapper is ERC20Upgradeable, OwnableUpgradeable {
 	) external returns (bool) {
 		wrap(_amount);
 		_approve(msg.sender, gateway, type(uint256).max);
-		IGatewayRouter(router).outboundTransfer(
+		IGatewayRouter(router).outboundTransfer{value: 0}(
 			address(this),
 			msg.sender,
 			_amount,
