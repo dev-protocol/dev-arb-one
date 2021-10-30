@@ -67,6 +67,7 @@ contract ArbDevWrapper is ERC20Upgradeable, OwnableUpgradeable {
 		);
 		_token.safeTransferFrom(msg.sender, address(this), _amount);
 		_mint(msg.sender, _amount);
+		_approve(msg.sender, gateway, type(uint256).max);
 		return true;
 	}
 
@@ -77,7 +78,6 @@ contract ArbDevWrapper is ERC20Upgradeable, OwnableUpgradeable {
 		bytes calldata _data
 	) external payable returns (bool) {
 		wrap(_amount);
-		_approve(msg.sender, gateway, type(uint256).max);
 		IGatewayRouter(router).outboundTransfer{value: msg.value}(
 			address(this),
 			msg.sender,
