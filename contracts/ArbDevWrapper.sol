@@ -75,10 +75,10 @@ contract ArbDevWrapper is ERC20Upgradeable, OwnableUpgradeable {
 		uint256 _maxGas,
 		uint256 _gasPriceBid,
 		bytes calldata _data
-	) external returns (bool) {
+	) external payable returns (bool) {
 		wrap(_amount);
 		_approve(msg.sender, gateway, type(uint256).max);
-		IGatewayRouter(router).outboundTransfer{value: 0}(
+		IGatewayRouter(router).outboundTransfer{value: msg.value}(
 			address(this),
 			msg.sender,
 			_amount,
