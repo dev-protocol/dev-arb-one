@@ -149,4 +149,29 @@ describe('ArbDevWrapper', () => {
 		expect(await this.ercDummy.balanceOf(user.address)).to.eq(DUMMY_MINT_AMOUNT)
 		expect(await this.ercDummy.balanceOf(this.dev.address)).to.eq(0)
 	})
+
+	describe('transferDev', () => {
+		it('Should successfully transferDev', async function () {
+			const [user] = await ethers.getSigners()
+			const amount = 100
+
+			const prev = await this.ercDummy.balanceOf(user.address)
+
+			await this.ercDummy.transfer(this.dev.address, amount)
+
+			await this.dev.transferDev()
+
+			expect(await this.ercDummy.balanceOf(user.address)).to.eq(prev)
+		})
+		it('Should fail transferDev when the sender is not owner', async function () {
+			const [, user1] = await ethers.getSigners()
+			const amount = 100
+
+			await this.ercDummy.transfer(this.dev.address, amount)
+
+			expect(this.dev.connect(user1).transferDev()).to.be.revertedWith(
+				'Ownable: caller is not the owner'
+			)
+		})
+	})
 })

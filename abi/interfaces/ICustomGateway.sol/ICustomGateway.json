@@ -24,7 +24,7 @@
 		],
 		"name": "registerTokenToL2",
 		"outputs": [],
-		"stateMutability": "nonpayable",
+		"stateMutability": "payable",
 		"type": "function"
 	}
 ]

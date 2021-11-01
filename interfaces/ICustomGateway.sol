@@ -7,5 +7,5 @@ interface ICustomGateway {
 		uint256 _maxGas,
 		uint256 _gasPriceBid,
 		uint256 _maxSubmissionCostForCustomBridge
-	) external;
+	) external payable;
 }
