@@ -21,7 +21,6 @@ contract ArbDevWrapper is ERC20Upgradeable, OwnableUpgradeable {
 	address public inbox;
 	address public router;
 	address public devAddress;
-	bool public registeredTokenBridge;
 	bool private shouldRegisterGateway;
 
 	event EscrowMint(address indexed minter, uint256 amount);
@@ -125,9 +124,7 @@ contract ArbDevWrapper is ERC20Upgradeable, OwnableUpgradeable {
 		uint256 maxSubmissionCostForRouter,
 		uint256 maxGas,
 		uint256 gasPriceBid
-	) public {
-		require(registeredTokenBridge == false, "ALREADY_REGISTERED");
-
+	) public onlyOwner {
 		// we temporarily set `shouldRegisterGateway` to true for the callback in registerTokenToL2 to succeed
 		bool prev = shouldRegisterGateway;
 		shouldRegisterGateway = true;
@@ -147,6 +144,5 @@ contract ArbDevWrapper is ERC20Upgradeable, OwnableUpgradeable {
 		);
 
 		shouldRegisterGateway = prev;
-		registeredTokenBridge = true;
 	}
 }
