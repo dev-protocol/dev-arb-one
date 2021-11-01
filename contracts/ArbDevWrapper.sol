@@ -130,14 +130,18 @@ contract ArbDevWrapper is ERC20Upgradeable, OwnableUpgradeable {
 		bool prev = shouldRegisterGateway;
 		shouldRegisterGateway = true;
 
-		ICustomGateway(gateway).registerTokenToL2(
+		uint256 gas1 = maxSubmissionCostForCustomBridge + maxGas * gasPriceBid;
+		uint256 gas2 = maxSubmissionCostForRouter + maxGas * gasPriceBid;
+		require(msg.value == gas1 + gas2, "OVERPAY");
+
+		ICustomGateway(gateway).registerTokenToL2{value: gas1}(
 			l2CustomTokenAddress,
 			maxGas,
 			gasPriceBid,
 			maxSubmissionCostForCustomBridge
 		);
 
-		IGatewayRouter(router).setGateway(
+		IGatewayRouter(router).setGateway{value: gas2}(
 			gateway,
 			maxGas,
 			gasPriceBid,
