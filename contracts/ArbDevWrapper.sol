@@ -125,7 +125,7 @@ contract ArbDevWrapper is ERC20Upgradeable, OwnableUpgradeable {
 		uint256 maxSubmissionCostForRouter,
 		uint256 maxGas,
 		uint256 gasPriceBid
-	) public onlyOwner {
+	) public payable onlyOwner {
 		// we temporarily set `shouldRegisterGateway` to true for the callback in registerTokenToL2 to succeed
 		bool prev = shouldRegisterGateway;
 		shouldRegisterGateway = true;
