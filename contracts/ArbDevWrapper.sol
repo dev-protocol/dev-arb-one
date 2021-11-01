@@ -32,6 +32,7 @@ contract ArbDevWrapper is ERC20Upgradeable, OwnableUpgradeable {
 		address _inbox,
 		address _devAddress
 	) public initializer {
+		__Ownable_init();
 		__ERC20_init("Arb Dev Wrapper", "WDEV");
 		l2Token = _l2TokenAddr;
 		router = _routerAddr;
