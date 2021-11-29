@@ -5414,10 +5414,10 @@ hardhat-abi-exporter@2.3.0:
   resolved "https://registry.yarnpkg.com/hardhat-abi-exporter/-/hardhat-abi-exporter-2.3.0.tgz#f7aeb56f2ceef1ccdb75a5b8d81dc80cbbfeefc4"
   integrity sha512-9EVhogHgFWsi4Bc46tv+WirOR+auGBZrv9V5/qAHBjOqYiZPbNXoFUo/yQhOAsF8Bz4Q9p4jHpdeQXnYt7g6Yw==
 
-hardhat-gas-reporter@1.0.5:
-  version "1.0.5"
-  resolved "https://registry.yarnpkg.com/hardhat-gas-reporter/-/hardhat-gas-reporter-1.0.5.tgz#95a3319064ec0c2ecf7e4b0642b161619e913e8e"
-  integrity sha512-TLVcL9mvl8rgp8D2raEyloEHFXjgUN8Hf2q4merug6pxaQv94FrX91/nPOh4JMkTG9rxfkmkP2dMKtFvB9+OTA==
+hardhat-gas-reporter@1.0.6:
+  version "1.0.6"
+  resolved "https://registry.yarnpkg.com/hardhat-gas-reporter/-/hardhat-gas-reporter-1.0.6.tgz#699bc0bb96e8c962c7f136a1c1f29cd3c32d569e"
+  integrity sha512-LlCEmSx1dZpnxKmODb2hmP5eJ1IAM5It3NnBNTUpBTxn9g9qPPI3JQTxj8AbGEiNc3r6V+w/mXYCmiC8pWvnoQ==
   dependencies:
     array-uniq "1.0.3"
     eth-gas-reporter "^0.2.23"
