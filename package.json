@@ -44,7 +44,7 @@
 		"ethers": "5.5.1",
 		"hardhat": "2.7.0",
 		"hardhat-abi-exporter": "2.3.0",
-		"hardhat-gas-reporter": "1.0.4",
+		"hardhat-gas-reporter": "1.0.5",
 		"prettier": "2.5.0",
 		"prettier-plugin-solidity": "1.0.0-beta.19",
 		"solhint": "3.3.6",
