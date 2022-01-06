@@ -3841,10 +3841,10 @@ eslint-config-standard@16.0.3:
   resolved "https://registry.yarnpkg.com/eslint-config-standard/-/eslint-config-standard-16.0.3.tgz#6c8761e544e96c531ff92642eeb87842b8488516"
   integrity sha512-x4fmJL5hGqNJKGHSjnLdgA6U6h1YW/G2dW9fA+cyVur4SK6lyue8+UgNKWlZtUDTXvgKDD/Oa3GQjmB5kjtVvg==
 
-eslint-config-xo-typescript@0.48.0:
-  version "0.48.0"
-  resolved "https://registry.yarnpkg.com/eslint-config-xo-typescript/-/eslint-config-xo-typescript-0.48.0.tgz#83a714305a388a03416465a6abda855f4ccf1248"
-  integrity sha512-/PCtmp8g+lZxGGrWYQ14Z1VPD6U/86xlaluT7rMTb3iM02ITWBXmMfgofLmoWZdpbg5v/M8/H+5CpyGqgCrgEw==
+eslint-config-xo-typescript@0.49.0:
+  version "0.49.0"
+  resolved "https://registry.yarnpkg.com/eslint-config-xo-typescript/-/eslint-config-xo-typescript-0.49.0.tgz#c7f1e09a298c9912d0366e1397aab1ea82c0ddd6"
+  integrity sha512-a493Ikqk1Ak2tbcVrfAwegvwFnfMbN+G1o6JnCsdQKVgjFQuAXNqJ8X88+01YKNQ8N3bZwFNACcC25+spZI3/g==
 
 eslint-config-xo@0.39.0:
   version "0.39.0"
